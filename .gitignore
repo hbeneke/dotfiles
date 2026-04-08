@@ -8,3 +8,6 @@ Thumbs.db
 *credentials*
 *secret*
 .env
+
+# Neovim
+nvim/lazy-lock.json

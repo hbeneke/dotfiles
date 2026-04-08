@@ -27,5 +27,22 @@ for cmd in "$DOTFILES_DIR/.claude/commands/"*.md; do
   echo "  ✓ Claude command: /$name"
 done
 
+# ── Neovim ─────────────────────────────────────────
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
+  NVIM_CONFIG="$APPDATA/../Local/nvim"
+else
+  NVIM_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+fi
+
+if [ -d "$NVIM_CONFIG" ] && [ ! -L "$NVIM_CONFIG" ]; then
+  echo "  ⚠ Backing up existing nvim config to ${NVIM_CONFIG}.bak"
+  mv "$NVIM_CONFIG" "${NVIM_CONFIG}.bak"
+elif [ -L "$NVIM_CONFIG" ]; then
+  rm "$NVIM_CONFIG"
+fi
+
+ln -sf "$DOTFILES_DIR/nvim" "$NVIM_CONFIG"
+echo "  ✓ Neovim config"
+
 echo ""
-echo "Done! Restart Claude Code to apply changes."
+echo "Done! Restart Claude Code and Neovim to apply changes."
