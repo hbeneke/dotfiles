@@ -11,6 +11,7 @@
   "model": "opus",
   "statusLine": {
     "type": "command",
-    "command": "bash \"$HOME/.claude/statusline-command.sh\""
+    "command": "node ~/.claude/statusline.js",
+    "padding": 0
   }
 }

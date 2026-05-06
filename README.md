@@ -9,7 +9,7 @@ Personal configuration files, synced across machines via Git.
 | File | Description |
 |------|-------------|
 | `settings.json` | Global settings: model, plugins, status line |
-| `statusline-command.sh` | Custom status line showing model, folder, git info, and context usage |
+| `statusline.js` | Custom status line (Node.js, cross-platform) — model, folder, git info, context usage |
 | `commands/audit.md` | `/audit` — Full technical audit as a senior software architect |
 | `commands/ssh.md` | `/ssh` — Load SSH key for git remote operations |
 

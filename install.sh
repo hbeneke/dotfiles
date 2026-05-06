@@ -17,8 +17,11 @@ ln -sf "$DOTFILES_DIR/.claude/settings.json" "$CLAUDE_DIR/settings.json"
 echo "  ✓ Claude settings"
 
 # Symlink statusline
-ln -sf "$DOTFILES_DIR/.claude/statusline-command.sh" "$CLAUDE_DIR/statusline-command.sh"
+ln -sf "$DOTFILES_DIR/.claude/statusline.js" "$CLAUDE_DIR/statusline.js"
 echo "  ✓ Claude statusline"
+
+# Cleanup legacy bash statusline if present
+rm -f "$CLAUDE_DIR/statusline-command.sh"
 
 # Symlink commands
 for cmd in "$DOTFILES_DIR/.claude/commands/"*.md; do
