@@ -1,0 +1,42 @@
+---
+import BaseLayout from "@layouts/base-layout.astro";
+import FileTree from "@components/file-tree.astro";
+import { getTree } from "@utils/walk-files";
+import { renderMarkdown } from "@utils/markdown";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+
+const tree = getTree();
+
+const rootReadmePath = join(process.cwd(), "README.md");
+let intro = "";
+if (existsSync(rootReadmePath)) {
+  intro = await renderMarkdown(readFileSync(rootReadmePath, "utf8"));
+}
+---
+
+<BaseLayout title="dotfiles" description="Personal dotfiles + tooling, browsable.">
+  <section class="mb-10">
+    <h1 class="primary mb-2 text-2xl">~/dotfiles</h1>
+    <p class="muted">
+      Personal config + tooling. Browse the tree to explore individual files,
+      hooks, and scripts.
+    </p>
+  </section>
+
+  {
+    intro && (
+      <section
+        class="prose prose-sm dark:prose-invert mb-10 max-w-none"
+        set:html={intro}
+      />
+    )
+  }
+
+  <section>
+    <h2 class="secondary mb-3 text-lg">files/</h2>
+    <div class="rounded border border-default surface p-3">
+      <FileTree nodes={tree} />
+    </div>
+  </section>
+</BaseLayout>

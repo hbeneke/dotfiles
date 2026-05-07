@@ -1,0 +1,195 @@
+---
+import BaseLayout from "@layouts/base-layout.astro";
+import FileTree from "@components/file-tree.astro";
+import CopyButton from "@components/copy-button.astro";
+import {
+  getTree,
+  flattenPaths,
+  readFileSafe,
+  type TreeNode,
+} from "@utils/walk-files";
+import { renderMarkdown } from "@utils/markdown";
+import { highlight, detectLang } from "@utils/highlight";
+import { posix } from "node:path";
+
+export async function getStaticPaths() {
+  const tree = getTree();
+  return flattenPaths(tree).map((node) => ({
+    params: { path: node.path },
+    props: { node },
+  }));
+}
+
+interface Props {
+  node: TreeNode;
+}
+
+const { node } = Astro.props as Props;
+const tree = getTree();
+
+const segments = node.path.split("/");
+const breadcrumbs = segments.map((seg, idx) => ({
+  name: seg,
+  href: `/${segments.slice(0, idx + 1).join("/")}`,
+}));
+
+let renderedReadme: string | null = null;
+let renderedFile: string | null = null;
+let isBinary = false;
+let rawContent = "";
+let language = "text";
+let isMarkdown = false;
+let downloadHref = "";
+
+if (node.type === "directory") {
+  const readmeChild = node.children?.find(
+    (c) => c.type === "file" && /^readme\.md$/i.test(c.name),
+  );
+  if (readmeChild) {
+    const { content, binary } = readFileSafe(readmeChild.path);
+    if (!binary) renderedReadme = await renderMarkdown(content);
+  }
+} else {
+  const { content, binary } = readFileSafe(node.path);
+  isBinary = binary;
+  rawContent = content;
+  language = detectLang(node.name);
+  isMarkdown = /\.mdx?$/i.test(node.name);
+  downloadHref = `/raw/${node.path}`;
+  if (!binary) {
+    if (isMarkdown) {
+      renderedFile = await renderMarkdown(content);
+    } else {
+      renderedFile = await highlight(content, language as Parameters<typeof highlight>[1]);
+    }
+  }
+}
+
+const sizeLabel = (bytes?: number) => {
+  if (bytes == null) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+};
+
+const githubBase = "https://github.com/hbeneke/dotfiles/blob/main/files";
+const ghHref = `${githubBase}/${node.path}`;
+const installCmdPath = posix.join("files", node.path);
+---
+
+<BaseLayout title={node.path} description={`${node.type} · ${node.path}`}>
+  <div class="grid gap-8 md:grid-cols-[260px_1fr]">
+    <aside class="md:sticky md:top-4 md:max-h-[calc(100vh-2rem)] md:overflow-y-auto">
+      <div class="rounded border border-default surface p-2 text-xs">
+        <FileTree nodes={tree} currentPath={node.path} />
+      </div>
+    </aside>
+
+    <article class="min-w-0">
+      <nav aria-label="Breadcrumb" class="mb-3 text-xs muted">
+        <a href="/" class="primary-link">~/dotfiles</a>
+        <span class="mx-1">/</span>
+        <span>files</span>
+        {
+          breadcrumbs.map((crumb, idx) => (
+            <>
+              <span class="mx-1">/</span>
+              {idx === breadcrumbs.length - 1 ? (
+                <span class="primary">{crumb.name}</span>
+              ) : (
+                <a href={crumb.href} class="primary-link">
+                  {crumb.name}
+                </a>
+              )}
+            </>
+          ))
+        }
+      </nav>
+
+      <header class="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+        <h1 class="primary text-xl break-all">{node.name}</h1>
+        <span class="muted text-xs">
+          {node.type === "directory" ? "directory" : sizeLabel(node.size)}
+        </span>
+      </header>
+
+      <div class="mb-6 flex flex-wrap gap-2">
+        <CopyButton value={installCmdPath} label="Copy path" />
+        {
+          node.type === "file" && (
+            <>
+              {!isBinary && <CopyButton value={rawContent} label="Copy contents" />}
+              <a
+                href={downloadHref}
+                download={node.name}
+                class="rounded border border-default px-2 py-1 text-xs muted hover:bg-[rgb(var(--surface))]"
+              >
+                Download
+              </a>
+            </>
+          )
+        }
+        <a
+          href={ghHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="rounded border border-default px-2 py-1 text-xs muted hover:bg-[rgb(var(--surface))]"
+        >
+          View on GitHub
+        </a>
+      </div>
+
+      {
+        node.type === "directory" && (
+          <>
+            {renderedReadme ? (
+              <section
+                class="prose prose-sm dark:prose-invert max-w-none"
+                set:html={renderedReadme}
+              />
+            ) : (
+              <section class="rounded border border-default surface p-4 text-xs muted">
+                {node.children && node.children.length > 0
+                  ? `${node.children.length} item(s). No README in this folder.`
+                  : "Empty folder."}
+              </section>
+            )}
+          </>
+        )
+      }
+
+      {
+        node.type === "file" && isBinary && (
+          <section class="rounded border border-default surface p-4 text-xs muted">
+            Binary file — use Download to inspect.
+          </section>
+        )
+      }
+
+      {
+        node.type === "file" && !isBinary && isMarkdown && (
+          <section
+            class="prose prose-sm dark:prose-invert max-w-none"
+            set:html={renderedFile!}
+          />
+        )
+      }
+
+      {
+        node.type === "file" && !isBinary && !isMarkdown && (
+          <section
+            class="overflow-x-auto rounded border border-default text-xs"
+            set:html={renderedFile!}
+          />
+        )
+      }
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .prose pre {
+    background-color: rgb(var(--surface));
+    border-radius: 0.375rem;
+  }
+</style>

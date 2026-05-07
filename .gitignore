@@ -10,4 +10,23 @@ Thumbs.db
 .env
 
 # Neovim
-nvim/lazy-lock.json
+files/nvim/lazy-lock.json
+
+# Astro
+dist/
+.astro/
+
+# Vercel
+.vercel/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Editor
+*.swp
+*.swo
+
+# Local Claude settings (auto-generated, contains local permission allow-list)
+.claude/settings.local.json
+files/.claude/settings.local.json

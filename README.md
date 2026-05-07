@@ -1,31 +1,42 @@
 # Dotfiles
 
-Personal configuration files, synced across machines via Git.
+Personal configuration files + tooling, synced across machines via Git, browsable as a static [Astro](https://astro.build) site.
 
-## What's included
+## Structure
 
-### Claude Code (`~/.claude/`)
+```
+.
+├── files/                    ← actual dotfiles content (synced to $HOME)
+│   ├── .claude/              ← Claude Code settings, statusline, commands
+│   ├── nvim/                 ← AstroNvim configuration
+│   ├── git-flow/             ← templates: hooks + sync-master script
+│   ├── bin/                  ← cross-platform CLIs (git-flow-init)
+│   └── install.sh            ← symlink installer
+│
+├── src/                      ← Astro site sources
+├── public/                   ← static assets (favicon, fonts, logo)
+└── package.json              ← Astro app
+```
 
-| File | Description |
-|------|-------------|
-| `settings.json` | Global settings: model, plugins, status line |
-| `statusline.js` | Custom status line (Node.js, cross-platform) — model, folder, git info, context usage |
-| `commands/audit.md` | `/audit` — Full technical audit as a senior software architect |
-| `commands/ssh.md` | `/ssh` — Load SSH key for git remote operations |
-
-## Installation
+## Dotfiles installation
 
 ```bash
 git clone git@github.com:hbeneke/dotfiles.git ~/dotfiles
-cd ~/dotfiles
+cd ~/dotfiles/files
 bash install.sh
 ```
 
-The install script creates symlinks from `~/.claude/` to this repo, so changes stay in sync with Git.
+The install script creates symlinks from your `$HOME` into `files/`, so edits stay in sync with Git.
 
-## Adding new configurations
+To use the bundled `git-flow-init` CLI from anywhere, add `files/bin/` to your `PATH` (the install script prints the exact command for your shell).
 
-1. Add the file to this repo
-2. Update `install.sh` to create the symlink
-3. Commit and push
-4. Run `install.sh` on other machines after pulling
+## Web (development)
+
+```bash
+npm install
+npm run dev      # local dev at http://localhost:4321
+npm run build    # static build into dist/
+npm run preview
+```
+
+The site walks `files/` at build time, respects per-folder `.dotignore` entries, and renders any `README.md` it finds.

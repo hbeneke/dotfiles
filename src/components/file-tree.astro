@@ -1,0 +1,71 @@
+---
+import type { TreeNode } from "@utils/walk-files";
+
+interface Props {
+  nodes: TreeNode[];
+  currentPath?: string;
+  level?: number;
+}
+
+const { nodes, currentPath, level = 0 } = Astro.props as Props;
+---
+
+<ul class={level === 0 ? "space-y-0.5" : "ml-4 space-y-0.5"}>
+  {
+    nodes.map((node) => {
+      const href = `/${node.path}`;
+      const isCurrent = currentPath === node.path;
+      const isAncestor =
+        currentPath != null && currentPath.startsWith(`${node.path}/`);
+      const open = level === 0 || isCurrent || isAncestor;
+
+      if (node.type === "directory") {
+        return (
+          <li>
+            <details open={open} class="group">
+              <summary
+                class={`flex cursor-pointer list-none items-center gap-2 rounded px-2 py-0.5 tree-node ${
+                  isCurrent ? "tree-current" : ""
+                }`}
+              >
+                <span class="secondary text-xs select-none">
+                  <span class="group-open:hidden">▶</span>
+                  <span class="hidden group-open:inline">▼</span>
+                </span>
+                <a
+                  href={href}
+                  class="flex-1 truncate hover:underline"
+                  data-astro-prefetch
+                >
+                  <span class="secondary">{node.name}/</span>
+                </a>
+              </summary>
+              {node.children && node.children.length > 0 && (
+                <Astro.self
+                  nodes={node.children}
+                  currentPath={currentPath}
+                  level={level + 1}
+                />
+              )}
+            </details>
+          </li>
+        );
+      }
+
+      return (
+        <li>
+          <a
+            href={href}
+            data-astro-prefetch
+            class={`flex items-center gap-2 rounded px-2 py-0.5 tree-node ${
+              isCurrent ? "tree-current" : ""
+            }`}
+          >
+            <span class="muted text-xs select-none">·</span>
+            <span class="truncate">{node.name}</span>
+          </a>
+        </li>
+      );
+    })
+  }
+</ul>

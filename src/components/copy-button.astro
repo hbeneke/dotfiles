@@ -1,0 +1,36 @@
+---
+interface Props {
+  value: string;
+  label?: string;
+}
+
+const { value, label = "Copy" } = Astro.props as Props;
+---
+
+<button
+  type="button"
+  class="copy-btn rounded border border-default px-2 py-1 text-xs muted hover:bg-[rgb(var(--surface))]"
+  data-copy={value}
+  aria-label={`Copy ${label.toLowerCase()}`}
+>
+  <span class="copy-label">{label}</span>
+</button>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>(".copy-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const value = btn.dataset.copy ?? "";
+      const label = btn.querySelector(".copy-label");
+      const original = label?.textContent ?? "";
+      try {
+        await navigator.clipboard.writeText(value);
+        if (label) label.textContent = "Copied";
+      } catch {
+        if (label) label.textContent = "Failed";
+      }
+      setTimeout(() => {
+        if (label) label.textContent = original;
+      }, 1200);
+    });
+  });
+</script>

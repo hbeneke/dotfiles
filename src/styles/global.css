@@ -1,0 +1,136 @@
+@import url("fonts.css");
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-jetbrains: "JetBrains Mono", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  :root {
+    --primary: 16, 185, 129;
+    --primary-hovered: 4, 120, 87;
+    --secondary: 217, 119, 6;
+    --secondary-hovered: 180, 83, 9;
+    --bg: 255, 255, 255;
+    --foreground: 17, 24, 39;
+    --muted: 107, 114, 128;
+    --surface: 243, 244, 246;
+    --border: 229, 231, 235;
+  }
+
+  :root.dark {
+    --primary: 16, 185, 129;
+    --primary-hovered: 187, 247, 208;
+    --secondary: 250, 204, 21;
+    --secondary-hovered: 254, 249, 195;
+    --bg: 26, 27, 30;
+    --foreground: 212, 212, 212;
+    --muted: 156, 163, 175;
+    --surface: 37, 38, 42;
+    --border: 55, 56, 60;
+  }
+
+  body {
+    background-color: rgb(var(--bg));
+    color: rgb(var(--foreground));
+    line-height: 1.4;
+    transition:
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  a,
+  button,
+  header,
+  main,
+  footer {
+    transition:
+      background-color 0.2s ease-in-out,
+      border-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
+  }
+}
+
+@layer components {
+  .primary {
+    color: rgb(var(--primary));
+    font-weight: bold;
+  }
+
+  .secondary {
+    color: rgb(var(--secondary));
+  }
+
+  .muted {
+    color: rgb(var(--muted));
+  }
+
+  .surface {
+    background-color: rgb(var(--surface));
+  }
+
+  .border-default {
+    border-color: rgb(var(--border));
+  }
+
+  .primary-link {
+    @apply text-[rgb(var(--primary))];
+    font-weight: bold;
+  }
+
+  .primary-link:hover {
+    @apply text-[rgb(var(--primary-hovered))] underline;
+  }
+
+  .secondary-link {
+    @apply text-[rgb(var(--secondary))];
+  }
+
+  .secondary-link:hover {
+    @apply text-[rgb(var(--secondary-hovered))] underline;
+  }
+
+  .wavy-underline {
+    @apply underline decoration-wavy underline-offset-4 decoration-[1.5px];
+    text-decoration-color: rgb(var(--primary));
+  }
+
+  .wavy-hover:hover {
+    @apply text-[rgb(var(--primary-hovered))] underline decoration-wavy underline-offset-4 decoration-[1.5px];
+    text-decoration-color: rgb(var(--primary-hovered));
+  }
+
+  .tree-node:hover {
+    background-color: rgb(var(--surface));
+  }
+
+  .tree-current {
+    background-color: rgb(var(--surface));
+    color: rgb(var(--primary));
+    font-weight: bold;
+  }
+
+  /* Shiki overrides — let dark theme apply on root.dark */
+  .shiki,
+  .shiki span {
+    background-color: rgb(var(--surface)) !important;
+  }
+
+  :root:not(.dark) .shiki,
+  :root:not(.dark) .shiki span {
+    color: var(--shiki-light) !important;
+  }
+
+  .dark .shiki,
+  .dark .shiki span {
+    color: var(--shiki-dark) !important;
+  }
+}

@@ -1,0 +1,43 @@
+---
+import "@styles/global.css";
+import SiteHeader from "@components/site-header.astro";
+import SiteFooter from "@components/site-footer.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = "dotfiles", description = "Personal dotfiles + tooling." } =
+  Astro.props as Props;
+const fullTitle = title === "dotfiles" ? "dotfiles" : `${title} · dotfiles`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/logo.svg" />
+    <script is:inline>
+      const theme = localStorage.getItem("theme") || "dark";
+      if (theme === "dark") document.documentElement.classList.add("dark");
+    </script>
+  </head>
+  <body
+    class="mx-auto flex min-h-screen min-w-[320px] max-w-4xl flex-col bg-[rgb(var(--bg))] px-4 pt-10 font-jetbrains text-sm text-[rgb(var(--foreground))] antialiased sm:px-8"
+  >
+    <SiteHeader />
+    <main id="main" class="flex-grow">
+      <slot />
+    </main>
+    <SiteFooter />
+  </body>
+</html>
