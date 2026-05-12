@@ -11,10 +11,9 @@ export type TreeNode = {
   hasReadme?: boolean;
 };
 
-const ROOT = posix.normalize(
-  process.cwd().split(sep).join("/"),
-);
-const FILES_DIR = posix.join(ROOT, "files");
+const CWD = posix.normalize(process.cwd().split(sep).join("/"));
+const REPO_ROOT = posix.dirname(CWD);
+const FILES_DIR = posix.join(REPO_ROOT, "files");
 
 const ALWAYS_IGNORE = [".git", "node_modules", ".DS_Store", "Thumbs.db"];
 

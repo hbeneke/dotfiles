@@ -1,7 +1,7 @@
 {
-  "name": "@habakukbeneke/dotfiles",
-  "version": "0.1.0",
-  "description": "Personal dotfiles + tooling, browsable as a static Astro site.",
+  "name": "@habakukbeneke/dotfiles-web",
+  "version": "0.0.0",
+  "description": "Astro app that renders the dotfiles repo as a browsable static site.",
   "private": true,
   "type": "module",
   "scripts": {
