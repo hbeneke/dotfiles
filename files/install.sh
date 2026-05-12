@@ -10,7 +10,7 @@ CLAUDE_DIR="$HOME/.claude"
 echo "Installing dotfiles from $DOTFILES_DIR"
 
 # ── Claude Code ─────────────────────────────────────
-mkdir -p "$CLAUDE_DIR/commands"
+mkdir -p "$CLAUDE_DIR/commands" "$CLAUDE_DIR/agents"
 
 # Symlink settings
 ln -sf "$DOTFILES_DIR/.claude/settings.json" "$CLAUDE_DIR/settings.json"
@@ -28,6 +28,14 @@ for cmd in "$DOTFILES_DIR/.claude/commands/"*.md; do
   name=$(basename "$cmd")
   ln -sf "$cmd" "$CLAUDE_DIR/commands/$name"
   echo "  ✓ Claude command: /$name"
+done
+
+# Symlink subagents
+for agent in "$DOTFILES_DIR/.claude/agents/"*.md; do
+  [ -e "$agent" ] || continue
+  name=$(basename "$agent")
+  ln -sf "$agent" "$CLAUDE_DIR/agents/$name"
+  echo "  ✓ Claude agent: ${name%.md}"
 done
 
 # ── Neovim ─────────────────────────────────────────
