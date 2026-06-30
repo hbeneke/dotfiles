@@ -69,6 +69,18 @@ if (major) {
   env.VERSION_BUMP_TYPE = "patch";
 }
 
+// Guard: if main already contains develop, the merge is a no-op and the
+// post-merge hook never runs, so no version bump happens. Warn instead of
+// reporting a misleading success.
+const behind = execSilent("git rev-list --count HEAD..develop");
+if (behind === "0") {
+  console.warn(
+    "Warning: main already up to date with develop - nothing to merge.\n" +
+      "   No version bump will occur (post-merge hook only runs on a real merge).\n" +
+      "   Commit a change on develop first if you intended to bump.",
+  );
+}
+
 try {
   execSync("git merge develop --no-edit", {
     encoding: "utf8",
