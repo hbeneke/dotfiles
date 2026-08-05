@@ -2,7 +2,7 @@
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?logo=vercel&logoColor=white)](https://dotfiles.equero.dev)
-[![Version](https://img.shields.io/badge/version-0.1.0-green.svg)](https://github.com/hbeneke/dotfiles)
+[![Version](https://img.shields.io/badge/version-0.1.4-green.svg)](https://github.com/hbeneke/dotfiles)
 
 Personal configuration files + tooling, synced across machines via Git and browsable as a static [Astro](https://astro.build) site.
 
@@ -29,6 +29,8 @@ Plus the dotfiles themselves: **Claude Code** (settings, commands, agents, statu
 .
 ├── files/                    ← actual dotfiles content (symlinked to $HOME)
 │   ├── .claude/              ← Claude Code settings, statusline, commands, agents
+│   │   ├── CLAUDE.md         ← global instructions applied to every project
+│   │   ├── keybindings.json  ← custom key bindings (vim editor mode)
 │   │   ├── commands/         ← user-invocable /commands
 │   │   └── agents/           ← orchestrator subagents (model-routed)
 │   ├── nvim/                 ← AstroNvim configuration
@@ -74,6 +76,13 @@ To use the bundled `git-flow-init` CLI from anywhere, add `files/bin/` to your `
 | `senior-architect`   | opus   | hard design problems — invoke with "senior architect" phrase     |
 | `bug-investigator`   | sonnet | static root-cause analysis from a bug description / stack trace  |
 | `js-console-debugger`| sonnet | two-phase JS/TS debugging — instruments code, diagnoses logs     |
+| `git-diff-commit-analyzer` | sonnet | deep diff analysis → conventional commit message + split advice |
+
+### Settings
+
+[`files/.claude/settings.json`](./files/.claude/settings.json) pins the defaults carried across machines: `model: opus`, `effortLevel: medium`, `editorMode: vim`, fullscreen TUI, the Node statusline, and the enabled plugins (official `code-review`, `code-simplifier`, `frontend-design`, `github`, `playground`, `vercel`, plus the third-party `caveman` marketplace). Machine-local permission grants live in `settings.local.json`, which is gitignored on purpose.
+
+[`files/.claude/CLAUDE.md`](./files/.claude/CLAUDE.md) holds the global rules injected into every project, and [`files/.claude/keybindings.json`](./files/.claude/keybindings.json) the custom key bindings.
 
 The main agent acts as the router — it reads each subagent's `description` and delegates. Edit any `.md` file in `files/.claude/agents/` to tune routing or swap models (`model: haiku | sonnet | opus | inherit`).
 
